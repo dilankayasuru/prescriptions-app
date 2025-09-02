@@ -7,10 +7,6 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
-Route::view('dashboard', 'dashboard')
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
-
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
 
@@ -19,4 +15,11 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
 });
 
-require __DIR__.'/auth.php';
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::view('dashboard', 'dashboard')->name('dashboard');
+    Route::view('prescriptions', view: 'prescriptions.index')->name('prescriptions');
+    Route::view('orders', view: 'orders.index')->name('orders');
+    Route::view('quotations', view: 'quotations.index')->name('quotations');
+});
+
+require __DIR__ . '/auth.php';
