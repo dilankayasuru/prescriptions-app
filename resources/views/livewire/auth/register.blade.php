@@ -11,6 +11,9 @@ use Livewire\Volt\Component;
 new #[Layout('components.layouts.auth')] class extends Component {
     public string $name = '';
     public string $email = '';
+    public string $dob = '';
+    public string $contactNo = '';
+    public string $address = '';
     public string $password = '';
     public string $password_confirmation = '';
 
@@ -22,6 +25,9 @@ new #[Layout('components.layouts.auth')] class extends Component {
         $validated = $this->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
+            'dob' => ['required', 'date', 'before:today'],
+            'contactNo' => ['required', 'regex:/^\d{10}$/', 'unique:' . User::class],
+            'address' => ['required', 'string', 'max:255'],
             'password' => ['required', 'string', 'confirmed', Rules\Password::defaults()],
         ]);
 
@@ -41,49 +47,36 @@ new #[Layout('components.layouts.auth')] class extends Component {
     <!-- Session Status -->
     <x-auth-session-status class="text-center" :status="session('status')" />
 
-    <form method="POST" wire:submit="register" class="flex flex-col gap-6">
-        <!-- Name -->
-        <flux:input
-            wire:model="name"
-            :label="__('Name')"
-            type="text"
-            required
-            autofocus
-            autocomplete="name"
-            :placeholder="__('Full name')"
-        />
+    <form method="POST" wire:submit="register" class="space-y-6">
+        <div class="space-y-6 md:grid md:grid-cols-2 md:gap-6 md:space-y-0">
+            <!-- Name -->
+            <flux:input wire:model="name" :label="__('Name')" type="text" required autofocus autocomplete="name"
+                :placeholder="__('Full name')" />
 
-        <!-- Email Address -->
-        <flux:input
-            wire:model="email"
-            :label="__('Email address')"
-            type="email"
-            required
-            autocomplete="email"
-            placeholder="email@example.com"
-        />
+            <!-- Email Address -->
+            <flux:input wire:model="email" :label="__('Email address')" type="email" required autocomplete="email"
+                placeholder="email@example.com" />
+
+            <!-- Date of Birth -->
+            <flux:input wire:model="dob" :label="__('Date of Birth')" type="date" required autocomplete="bday"
+                placeholder="YYYY-MM-DD" />
+
+            <!-- Contact Number -->
+            <flux:input wire:model="contactNo" :label="__('Contact Number')" type="number" required autocomplete="tel"
+                placeholder="1234567890" maxlength="10" />
+        </div>
+
+        <!-- Address -->
+        <flux:input wire:model="address" :label="__('Address')" type="text" required autocomplete="address"
+            :placeholder="__('123 Main St, City, Country')" />
 
         <!-- Password -->
-        <flux:input
-            wire:model="password"
-            :label="__('Password')"
-            type="password"
-            required
-            autocomplete="new-password"
-            :placeholder="__('Password')"
-            viewable
-        />
+        <flux:input wire:model="password" :label="__('Password')" type="password" required autocomplete="new-password"
+            :placeholder="__('Password')" viewable />
 
         <!-- Confirm Password -->
-        <flux:input
-            wire:model="password_confirmation"
-            :label="__('Confirm password')"
-            type="password"
-            required
-            autocomplete="new-password"
-            :placeholder="__('Confirm password')"
-            viewable
-        />
+        <flux:input wire:model="password_confirmation" :label="__('Confirm password')" type="password" required
+            autocomplete="new-password" :placeholder="__('Confirm password')" viewable />
 
         <div class="flex items-center justify-end">
             <flux:button type="submit" variant="primary" class="w-full">
