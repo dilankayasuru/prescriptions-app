@@ -93,7 +93,7 @@
             </div>
 
             <div class="flex justify-end">
-                <x-primary-button :label="__('Submit Prescription')" class="inline-block" type="submit" />
+                <x-primary-button :label="__('Submit Prescription')" class="inline-block" type="submit" role="button" />
             </div>
         </form>
     </div>

@@ -1,10 +1,7 @@
 <x-layouts.app :title="__('Prescriptions')">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
         <div class="flex items-start justify-between">
-            <div>
-                <h1 class="text-3xl font-semibold text-gray-900 dark:text-white">Prescriptions</h1>
-                <p class="mt-1 text-sm text-gray-500 dark:text-zinc-200">Manage and track all prescription orders.</p>
-            </div>
+            <x-main-title title="Prescriptions" description="Manage and track all prescription orders." />
 
             <div class="flex items-center space-x-3">
                 <x-primary-button :label="__('New Prescription')" :route="route('prescriptions.create')" icon="plus" />
@@ -118,7 +115,7 @@
 
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     <a href="{{ isset($prescription) ? route('prescriptions.show', $prescription) : '#' }}"
-                                        class="text-blue-600 hover:text-blue-800 dark:hover:text-neutral-200 dark:text-white hover:underline">
+                                        class="text-blue-600 hover:text-blue-800 dark:hover:text-neutral-200 dark:text-white">
                                         View Details
                                     </a>
                                 </td>
