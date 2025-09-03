@@ -158,10 +158,16 @@
             @if (Auth::user()->userRole === 'user' && !$prescription->quotation)
                 <div
                     class="flex flex-col justify-end sm:flex-row gap-4 pt-6 border-t border-gray-200 dark:border-gray-700">
-                    <x-primary-button :label="__('Edit Prescription')" variant="outlined" icon="pencil-square"
-                        route="{{ route('prescriptions', $prescription) }}" />
-                    <x-primary-button :label="__('Delete Prescription')" variant="danger" icon="trash"
-                        route="{{ route('prescriptions.destroy', $prescription) }}" />
+                    <form action="{{ route('prescriptions.destroy', $prescription) }}" method="POST" class="inline">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit"
+                            class="cursor-pointer inline-flex items-center px-4 py-2 rounded-md shadow-sm text-sm font-medium bg-red-600 hover:bg-red-700 text-white"
+                            onclick="return confirm('Are you sure you want to delete this prescription? This action cannot be undone.')">
+                            <x-dynamic-component component="flux::icon.trash" class="-ml-1 mr-2 h-4 w-4" />
+                            {{ __('Delete Prescription') }}
+                        </button>
+                    </form>
                 </div>
             @endif
 
