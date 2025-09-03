@@ -156,18 +156,6 @@
             color: #6c757d;
             font-size: 14px;
         }
-
-        .alert {
-            padding: 15px;
-            border-radius: 6px;
-            margin: 20px 0;
-        }
-
-        .alert-info {
-            background-color: #d1ecf1;
-            color: #0c5460;
-            border: 1px solid #bee5eb;
-        }
     </style>
 </head>
 
@@ -181,11 +169,13 @@
         </div>
 
         <div class="greeting">
-            Hello Admin,
+            Hello {{ $quotation->status === 'completed' ? $quotation->prescription->user->name : 'Admin' }},
         </div>
 
         <div class="content">
-            <p>A quotation status has been updated by the customer. Please find the details below:</p>
+            <p>A quotation status has been updated by the
+                {{ $quotation->status === 'completed' ? 'Admin' : $quotation->prescription->user->name }}. Please find
+                the details below:</p>
         </div>
 
         <div class="customer-info">
@@ -242,18 +232,6 @@
             @endif
         </div>
 
-        @if ($quotation->status === 'approved')
-            <div class="alert alert-info">
-                <strong>Next Steps:</strong> The customer has approved this quotation. You may proceed with preparing
-                the medicines for delivery or pickup.
-            </div>
-        @elseif ($quotation->status === 'rejected')
-            <div class="alert alert-info">
-                <strong>Note:</strong> The customer has rejected this quotation. You may want to review the pricing or
-                contact the customer for further discussion.
-            </div>
-        @endif
-
         <div style="text-align: center;">
             <a href="{{ route('quotations.show', $quotation->id) }}" class="cta-button">View Quotation</a>
         </div>
@@ -261,7 +239,7 @@
         <div class="footer">
             <p>This notification was sent automatically when a quotation status was updated.</p>
             <p style="margin-top: 15px; font-size: 12px;">
-                Prescription Management System - Admin Dashboard
+                Prescription Management System - Admin
             </p>
         </div>
     </div>

@@ -15,9 +15,10 @@
                 <div
                     class="px-3 py-2 rounded-lg text-sm font-medium
                     @if ($quotation->status === 'pending') bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-200
-                    @elseif($quotation->status === 'accepted') bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-200
+                    @elseif($quotation->status === 'approved') bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-200
+                    @elseif($quotation->status === 'completed') bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-200
                     @elseif($quotation->status === 'rejected') bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-200
-                    @else bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-200 @endif">
+                    @else bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-200 @endif">
                     {{ ucfirst($quotation->status) }}
                 </div>
             </div>
@@ -48,6 +49,21 @@
                             role="button" />
                     </form>
                 </div>
+            </div>
+        @endif
+
+        @if ($quotation->status === 'approved' && Auth::user()->userRole === 'admin')
+            <div class="bg-white dark:bg-neutral-800 rounded-lg border border-neutral-200 dark:border-neutral-700 p-6">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Complete quotation</h3>
+                <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                    User has approved this quotation. Please proceed with this quotation.
+                </p>
+                <form action="{{ route('quotations.updateStatus', $quotation) }}" method="POST" class="inline">
+                    @csrf
+                    @method('PATCH')
+                    <input type="hidden" name="status" value="completed">
+                    <x-primary-button :label="__('Complete the quotation')" icon="check" variant="primary" role="button" type="submit" />
+                </form>
             </div>
         @endif
 
