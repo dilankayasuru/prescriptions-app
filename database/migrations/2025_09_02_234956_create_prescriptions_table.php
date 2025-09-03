@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete(action: 'cascade');
             $table->text('note')->nullable();
             $table->string('delivery_address');
-            $table->dateTime('delivery_time');
+            $table->string('delivery_time');
             $table->timestamps();
         });
     }

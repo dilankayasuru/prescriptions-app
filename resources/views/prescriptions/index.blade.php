@@ -48,6 +48,9 @@
                         <tr>
                             <th
                                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                Prescription ID</th>
+                            <th
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                 Patient</th>
                             <th
                                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
@@ -55,9 +58,6 @@
                             <th
                                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                 Status</th>
-                            <th
-                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                Prescription ID</th>
                             <th class="px-6 py-3"></th>
                         </tr>
                     </thead>
@@ -78,7 +78,11 @@
                         @endphp
 
                         @forelse ($prescriptions ?? collect([]) as $prescription)
-                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-800">
+                            <tr class="hover:bg-gray-50 dark:hover:bg-neutral-900">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
+                                    #{{ $prescription->id ?? '—' }}
+                                </td>
+
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
                                         <div
@@ -101,7 +105,7 @@
                                 </td>
 
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
-                                    {{ optional($prescription->created_at)->format('Y-m-d') ?? '' }}
+                                    {{ $prescription->created_at->format('Y-m-d g:i a') }}
                                 </td>
 
                                 <td class="px-6 py-4 whitespace-nowrap">
@@ -110,10 +114,6 @@
                                         class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $cls }}">
                                         {{ $prescription->status ?? 'Pending' }}
                                     </span>
-                                </td>
-
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
-                                    #{{ $prescription->id ?? '—' }}
                                 </td>
 
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">

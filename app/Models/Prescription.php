@@ -17,4 +17,9 @@ class Prescription extends Model
     {
         return $this->hasMany(Image::class);
     }
+
+    public function user()
+    {
+        return $this->belongsTo(\App\Models\User::class);
+    }
 }
