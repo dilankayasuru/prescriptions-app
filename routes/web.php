@@ -6,10 +6,6 @@ use Livewire\Volt\Volt;
 use App\Http\Controllers\PrescriptionController;
 use App\Http\Controllers\QuotationController;
 
-Route::get('/', function () {
-    return view('welcome');
-})->name('home');
-
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
 
@@ -19,7 +15,8 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::view('dashboard', 'dashboard')->name('dashboard');
+    Route::get('/', [PrescriptionController::class, 'index'])->name('home');
+    Route::get('dashboard', [PrescriptionController::class, 'index'])->name('dashboard');
 
     // Prescriptions — controller routes
     Route::get('prescriptions', [PrescriptionController::class, 'index'])->name('prescriptions');
@@ -37,9 +34,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('quotations/{quotation}', [QuotationController::class, 'update'])->middleware(RoleMiddleware::class . ':admin')->name('quotations.update');
     Route::patch('quotations/{quotation}/status', [QuotationController::class, 'updateStatus'])->name('quotations.updateStatus');
     Route::delete('quotations/{quotation}', [QuotationController::class, 'destroy'])->name('quotations.destroy');
-
-    // Orders routes
-    Route::view('orders', 'orders.index')->name('orders')->middleware(RoleMiddleware::class . ':admin');
 });
 
 require __DIR__ . '/auth.php';

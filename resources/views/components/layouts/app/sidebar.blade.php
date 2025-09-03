@@ -14,17 +14,11 @@
         </a>
 
         <flux:navlist variant="outline">
-            <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')"
-                wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
             <flux:navlist.item icon="document-text" :href="route('prescriptions')"
                 :current="request()->routeIs('prescriptions')" wire:navigate>{{ __(key: 'Prescriptions') }}
             </flux:navlist.item>
             <flux:navlist.item icon="calculator" :href="route('quotations')" :current="request()->routeIs('quotations')"
                 wire:navigate>{{ __(key: 'Quotations') }}</flux:navlist.item>
-            @if (auth()->user()->userRole === 'admin')
-                <flux:navlist.item icon="truck" :href="route('orders')" :current="request()->routeIs('orders')"
-                    wire:navigate>{{ __('Orders') }}</flux:navlist.item>
-            @endif
         </flux:navlist>
 
         <flux:spacer />
