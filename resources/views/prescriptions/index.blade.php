@@ -2,18 +2,21 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
         <div class="flex items-start justify-between">
             <x-main-title title="Prescriptions" description="Manage and track all prescription orders." />
-
-            <div class="flex items-center space-x-3">
-                <x-primary-button :label="__('New Prescription')" :route="route('prescriptions.create')" icon="plus" />
-            </div>
+            @if (Auth::user()->userRole === 'user')
+                <div class="flex items-center space-x-3">
+                    <x-primary-button :label="__('New Prescription')" :route="route('prescriptions.create')" icon="plus" />
+                </div>
+            @endif
         </div>
 
-        <div class="flex-1">
-            <label for="search" class="sr-only">Search</label>
-            <div class="relative max-w-md">
-                <x-search-input placeholder="{{ __('Search prescriptions...') }}" name="search" id="search" />
+        @if (Auth::user()->userRole === 'admin')
+            <div class="flex-1">
+                <label for="search" class="sr-only">Search</label>
+                <div class="relative max-w-md">
+                    <x-search-input placeholder="{{ __('Search prescriptions...') }}" name="search" id="search" />
+                </div>
             </div>
-        </div>
+        @endif
 
         <div
             class="bg-white dark:bg-neutral-800 rounded-lg shadow border border-gray-200 dark:border-neutral-700 overflow-hidden">

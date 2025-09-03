@@ -4,8 +4,12 @@
         <x-back-button route="prescriptions" label="Back to Prescriptions" />
 
         <!-- Main Title -->
-        <x-main-title title="Prescription Details" description="View the details of your uploaded prescription."
-            class="pb-4" />
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
+            <x-main-title title="Prescription Details" description="View the details of your uploaded prescription."
+                class="pb-4" />
+            <x-primary-button :label="__('Send Quotation')" icon="paper-airplane" route="{{ route('quotations', $prescription) }}" />
+        </div>
+
 
         <!-- Prescription Information Section -->
         <div>
@@ -136,23 +140,27 @@
         @endif
 
         <!-- Action Buttons -->
-        <div class="flex flex-col justify-end sm:flex-row gap-4 pt-6 border-t border-gray-200 dark:border-gray-700">
-            <x-primary-button :label="__('Edit Prescription')" variant="outlined" icon="pencil-square"
-                route="{{ route('prescriptions', $prescription) }}" />
-            <x-primary-button :label="__('Delete Prescription')" variant="danger" icon="trash"
-                route="{{ route('prescriptions.destroy', $prescription) }}" />
-        </div>
+        @if (Auth::user()->userRole === 'user')
+            <div class="flex flex-col justify-end sm:flex-row gap-4 pt-6 border-t border-gray-200 dark:border-gray-700">
+                <x-primary-button :label="__('Edit Prescription')" variant="outlined" icon="pencil-square"
+                    route="{{ route('prescriptions', $prescription) }}" />
+                <x-primary-button :label="__('Delete Prescription')" variant="danger" icon="trash"
+                    route="{{ route('prescriptions.destroy', $prescription) }}" />
+            </div>
+        @endif
+
     </div>
 
     <!-- Image Modal -->
-    <div id="imageModal" class="fixed inset-0 bg-black/25 backdrop-blur-sm z-50 items-center justify-center max-h-70vh top-0 left-0 p-4"
+    <div id="imageModal"
+        class="fixed inset-0 bg-black/25 backdrop-blur-sm z-50 items-center justify-center max-h-70vh top-0 left-0 p-4"
         style="display: none;">
         <div class="relative max-w-4xl max-h-full p-4">
-            <button onclick="closeImageModal()" class="cursor-pointer absolute top-6 right-6 text-white hover:text-gray-300 z-10">
+            <button onclick="closeImageModal()"
+                class="cursor-pointer absolute top-6 right-6 text-white hover:text-gray-300 z-10">
                 <flux:icon.x-mark class="w-8 h-8" />
             </button>
-            <img id="modalImage" src="" alt=""
-                class="max-h-[90vh] object-cover rounded-lg">
+            <img id="modalImage" src="" alt="" class="max-h-[90vh] object-cover rounded-lg">
         </div>
     </div>
 
