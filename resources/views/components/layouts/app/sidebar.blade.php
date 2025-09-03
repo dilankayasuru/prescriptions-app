@@ -21,8 +21,10 @@
             </flux:navlist.item>
             <flux:navlist.item icon="calculator" :href="route('quotations')" :current="request()->routeIs('quotations')"
                 wire:navigate>{{ __(key: 'Quotations') }}</flux:navlist.item>
-            <flux:navlist.item icon="truck" :href="route('orders')" :current="request()->routeIs('orders')"
-                wire:navigate>{{ __('Orders') }}</flux:navlist.item>
+            @if (auth()->user()->userRole === 'admin')
+                <flux:navlist.item icon="truck" :href="route('orders')" :current="request()->routeIs('orders')"
+                    wire:navigate>{{ __('Orders') }}</flux:navlist.item>
+            @endif
         </flux:navlist>
 
         <flux:spacer />

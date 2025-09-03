@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Middleware\RoleMiddleware;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
+use App\Http\Controllers\PrescriptionController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -17,9 +19,15 @@ Route::middleware(['auth'])->group(function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::view('dashboard', 'dashboard')->name('dashboard');
-    Route::view('prescriptions', view: 'prescriptions.index')->name('prescriptions');
-    Route::view('orders', view: 'orders.index')->name('orders');
-    Route::view('quotations', view: 'quotations.index')->name('quotations');
+
+    // Prescriptions — controller routes
+    Route::get('prescriptions', [PrescriptionController::class, 'index'])->name('prescriptions');
+    Route::get('prescriptions/create', [PrescriptionController::class, 'create'])->name('prescriptions.create');
+    Route::post('prescriptions', [PrescriptionController::class, 'store'])->name('prescriptions.store');
+    Route::get('prescriptions/{prescription}', [PrescriptionController::class, 'show'])->name('prescriptions.show');
+
+    Route::view('orders', 'orders.index')->name('orders')->middleware(RoleMiddleware::class . ':admin');
+    Route::view('quotations', 'quotations.index')->name('quotations');
 });
 
 require __DIR__ . '/auth.php';
