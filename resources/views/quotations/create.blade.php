@@ -73,6 +73,11 @@
                     </div>
                 </div>
             </div>
+
+            @if ($prescription->quotation == null)
+                @livewire('o-c-r-prescriptons', ['images' => $prescription->images])
+            @endif
+
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <!-- Left Column: Prescription Images -->
 

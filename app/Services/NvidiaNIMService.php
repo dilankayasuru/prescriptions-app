@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class NvidiaNIMService
 {
@@ -22,7 +23,7 @@ class NvidiaNIMService
 
     public function extractFromImage(string $imagePath): mixed
     {
-        $imageData = base64_encode(file_get_contents('storage/'.$imagePath));
+        $imageData = base64_encode(file_get_contents('storage/' . $imagePath));
 
         $systemMessage = <<<SYS
 You are a medical prescription parser. Extract medicine names and dosages from prescription images.

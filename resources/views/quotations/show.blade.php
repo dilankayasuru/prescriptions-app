@@ -51,7 +51,7 @@
                 </div>
             </div>
         @endif
-
+        
         @if ($quotation->status === 'approved' && Auth::user()->userRole === 'admin')
             <div class="bg-white dark:bg-neutral-800 rounded-lg border border-neutral-200 dark:border-neutral-700 p-6">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Complete quotation</h3>
@@ -62,7 +62,8 @@
                     @csrf
                     @method('PATCH')
                     <input type="hidden" name="status" value="completed">
-                    <x-primary-button :label="__('Complete the quotation')" icon="check" variant="primary" role="button" type="submit" />
+                    <x-primary-button :label="__('Complete the quotation')" icon="check" variant="primary" role="button"
+                        type="submit" />
                 </form>
             </div>
         @endif
