@@ -9,37 +9,46 @@
             @endif
         </div>
 
-        @if (Auth::user()->userRole === 'admin')
-            <div class="flex-1">
-                <label for="search" class="sr-only">Search</label>
-                <div class="relative max-w-md">
-                    <x-search-input placeholder="{{ __('Search prescriptions...') }}" name="search" id="search" />
-                </div>
-            </div>
-        @endif
-
         <div
             class="bg-white dark:bg-neutral-800 rounded-lg shadow border border-gray-200 dark:border-neutral-700 overflow-hidden">
             <div class="px-6 py-4 border-b">
-                <div class="flex items-center justify-end space-x-3">
-                    <div class="flex items-center space-x-2">
-                        <p class="text-sm">Sort By:</p>
-                        <label for="sort" class="sr-only">Sort</label>
-                        <div class="relative">
-                            <x-select-input name="sort" :options="[
-                                'default' => 'By Default',
-                                'newest' => 'Newest First',
-                                'oldest' => 'Oldest First',
-                                'status' => 'By Status',
-                            ]" :value="request('sort')" />
+                <form method="GET" action="{{ route('prescriptions') }}" id="filterForm">
+                    <div class="flex items-center justify-end space-x-3">
+                        <div class="flex items-center space-x-2">
+                            <p class="text-sm">Status:</p>
+                            <label for="status" class="sr-only">status</label>
+                            <div class="relative">
+                                <x-select-input name="status" :options="[
+                                    '' => 'All',
+                                    'pending' => 'Pending Review',
+                                    'quotation_sent' => 'Quotation Sent',
+                                ]" :value="request('status')" />
+                            </div>
+                        </div>
+
+                        <div class="flex items-center space-x-2">
+                            <p class="text-sm">Sort By:</p>
+                            <label for="sort" class="sr-only">Sort</label>
+                            <div class="relative">
+                                <x-select-input name="sort" :options="[
+                                    'newest' => 'Newest First',
+                                    'oldest' => 'Oldest First',
+                                ]" :value="request('sort', 'newest')" />
+                            </div>
+                        </div>
+
+                        <div class="flex items-center space-x-2">
+                            <p class="text-sm">Date Range:</p>
+                            <x-date-range name-start="date_from" name-end="date_to" :value-start="request('date_from')" :value-end="request('date_to')" />
+                        </div>
+
+                        <div class="flex items-center space-x-2">
+                            <x-primary-button label="Apply Filters" type="submit" role="button" />
+                            <x-primary-button label="Clear Filters" variant="outlined"
+                                route="{{ route('prescriptions') }}" />
                         </div>
                     </div>
-
-                    <div class="flex items-center space-x-2">
-                        <p class="text-sm">Date Range:</p>
-                        <x-date-range name-start="date_from" name-end="date_to" :value-start="request('date_from')" :value-end="request('date_to')" />
-                    </div>
-                </div>
+                </form>
             </div>
 
             <div class="overflow-x-auto">
@@ -84,7 +93,7 @@
                                                 {{ $prescription->user->name ?? 'Unknown Patient' }}
                                             </div>
                                             <div class="text-sm text-gray-500 dark:text-gray-400">
-                                                {{ $prescription->user->phone ?? '' }}
+                                                {{ $prescription->user->email ?? '' }}
                                             </div>
                                         </div>
                                     </div>

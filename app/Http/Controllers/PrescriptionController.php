@@ -13,9 +13,40 @@ class PrescriptionController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $prescriptions = Prescription::with('user')->latest()->get();
+        $query = Prescription::with(['user', 'quotation']);
+
+        // Filter by status (based on whether quotation exists)
+        if ($request->filled('status')) {
+            if ($request->status === 'pending') {
+                $query->doesntHave('quotation');
+            } elseif ($request->status === 'quotation_sent') {
+                $query->has('quotation');
+            }
+        }
+
+        // Filter by date range
+        if ($request->filled('date_from')) {
+            $query->whereDate('created_at', '>=', $request->date_from);
+        }
+
+        if ($request->filled('date_to')) {
+            $query->whereDate('created_at', '<=', $request->date_to);
+        }
+
+        // Sort by date
+        if ($request->filled('sort')) {
+            if ($request->sort === 'oldest') {
+                $query->oldest();
+            } else {
+                $query->latest();
+            }
+        } else {
+            $query->latest();
+        }
+
+        $prescriptions = $query->get();
         return view('prescriptions.index', compact('prescriptions'));
     }
 

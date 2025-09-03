@@ -19,19 +19,41 @@ class QuotationController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        if (Auth::user()->userRole === "admin") {
-            $quotations = Quotation::with(['prescription.user', 'medicineQuotations'])->get();
-            return view('quotations.index', compact('quotations'));
-        } else {
-            $quotations = Quotation::with(['prescription.user', 'medicineQuotations'])
-                ->whereHas('prescription', function ($query) {
-                    $query->where('user_id', Auth::id());
-                })
-                ->get();
-            return view('quotations.index', compact('quotations'));
+        $query = Quotation::with(['prescription.user', 'medicineQuotations']);
+
+        // Apply user role filtering
+        if (Auth::user()->userRole !== "admin") {
+            $query->whereHas('prescription', function ($q) {
+                $q->where('user_id', Auth::id());
+            });
         }
+
+        // Apply status filter
+        if ($request->filled('status') && $request->input('status') !== 'all') {
+            $query->where('status', $request->input('status'));
+        }
+
+        // Apply date range filter
+        if ($request->filled('date_from')) {
+            $query->whereDate('created_at', '>=', $request->input('date_from'));
+        }
+        if ($request->filled('date_to')) {
+            $query->whereDate('created_at', '<=', $request->input('date_to'));
+        }
+
+        // Apply sorting
+        $sort = $request->input('sort', 'newest');
+        if ($sort === 'oldest') {
+            $query->orderBy('created_at', 'asc');
+        } else {
+            $query->orderBy('created_at', 'desc');
+        }
+
+        $quotations = $query->get();
+
+        return view('quotations.index', compact('quotations'));
     }
 
     /**
