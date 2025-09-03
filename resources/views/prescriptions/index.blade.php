@@ -1,5 +1,5 @@
 <x-layouts.app :title="__('Prescriptions')">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+    <div class="space-y-6">
         <div class="flex items-start justify-between">
             <x-main-title title="Prescriptions" description="Manage and track all prescription orders." />
             @if (Auth::user()->userRole === 'user')

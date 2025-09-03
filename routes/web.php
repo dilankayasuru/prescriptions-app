@@ -4,6 +4,7 @@ use App\Http\Middleware\RoleMiddleware;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 use App\Http\Controllers\PrescriptionController;
+use App\Http\Controllers\QuotationController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -27,8 +28,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('prescriptions/{prescription}', [PrescriptionController::class, 'show'])->name('prescriptions.show');
     Route::delete('prescriptions/{prescription}', [PrescriptionController::class, 'destroy'])->name('prescriptions.destroy');
 
+    // Quotations - controller routes
+    Route::get('quotations', [QuotationController::class, 'index'])->name('quotations');
+    Route::get('quotations/create', [QuotationController::class, 'create'])->middleware(RoleMiddleware::class . ':admin')->name('quotations.create');
+    Route::post('quotations', [QuotationController::class, 'store'])->middleware(RoleMiddleware::class . ':admin')->name('quotations.store');
+    Route::get('quotations/{quotation}', [QuotationController::class, 'show'])->name('quotations.show');
+    Route::get('quotations/{quotation}/edit', [QuotationController::class, 'edit'])->middleware(RoleMiddleware::class . ':admin')->name('quotations.edit');
+    Route::put('quotations/{quotation}', [QuotationController::class, 'update'])->middleware(RoleMiddleware::class . ':admin')->name('quotations.update');
+    Route::delete('quotations/{quotation}', [QuotationController::class, 'destroy'])->name('quotations.destroy');
+
+    // Orders routes
     Route::view('orders', 'orders.index')->name('orders')->middleware(RoleMiddleware::class . ':admin');
-    Route::view('quotations', 'quotations.index')->name('quotations');
 });
 
 require __DIR__ . '/auth.php';

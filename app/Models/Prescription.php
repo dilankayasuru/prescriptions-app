@@ -22,4 +22,9 @@ class Prescription extends Model
     {
         return $this->belongsTo(\App\Models\User::class);
     }
+
+    public function quotation()
+    {
+        return $this->hasOne(Quotation::class);
+    }
 }

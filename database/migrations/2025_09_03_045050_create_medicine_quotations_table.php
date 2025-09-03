@@ -14,8 +14,9 @@ return new class extends Migration
         Schema::create('medicine_quotations', function (Blueprint $table) {
             $table->id();
             $table->foreignId('quotation_id')->constrained()->onDelete('cascade');
-            $table->foreignId('medicine_id')->constrained()->onDelete('cascade');
-            $table->decimal('price', 8, 2);
+            $table->string('name');
+            $table->string('dosage');
+            $table->decimal('unit_price', 10, 2);
             $table->integer('quantity');
             $table->timestamps();
         });

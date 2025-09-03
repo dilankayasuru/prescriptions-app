@@ -8,18 +8,14 @@ class MedicineQuotation extends Model
 {
     protected $fillable = [
         'quotation_id',
-        'medicine_id',
-        'price',
+        'name',
+        'dosage',
+        'unit_price',
         'quantity',
     ];
 
     public function quotation()
     {
         return $this->belongsTo(Quotation::class);
-    }
-
-    public function medicine()
-    {
-        return $this->belongsTo(Medicine::class);
     }
 }
