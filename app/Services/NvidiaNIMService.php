@@ -11,37 +11,43 @@ class NvidiaNIMService
 
     public function __construct()
     {
-        $this->apiKey = env("NVIDIA_API_KEY");
+        $apiKey = config('services.nvidia.api_key');
+
+        if (empty($apiKey)) {
+            throw new \Exception("NVIDIA_API_KEY environment variable is not set or is empty.");
+        }
+
+        $this->apiKey = $apiKey;
     }
 
-    public function extractFromImage(string $imagePath, bool $stream = false): mixed
+    public function extractFromImage(string $imagePath): mixed
     {
-        // Encode image to base64
-        $imageData = base64_encode(file_get_contents($imagePath));
+        $imageData = base64_encode(file_get_contents('storage/'.$imagePath));
 
         $systemMessage = <<<SYS
-You are a precise medical prescription parser.
-Your only job is to extract medicine names and dosages from prescriptions.
+You are a medical prescription parser. Extract medicine names and dosages from prescription images.
 
-### Rules:
-1. Output must be a valid JSON array of objects.
-2. Each object = { "medicine": string, "dosage": string }.
-3. Return [] if no medicines are found.
-4. Do not include explanations or extra text.
+CRITICAL INSTRUCTIONS:
+- Return ONLY a valid JSON array
+- Each object format: {"medicine": "name", "dosage": "amount"}
+- Example: [{"medicine": "Penicillins", "dosage": "500mg"}, {"medicine": "Amoxicillin", "dosage": "500mg"}]
+- If no medicines found, return: []
+- NO explanations, NO additional text, NO markdown formatting
+- ONLY the JSON array as raw output
 SYS;
 
         $userPrompt = <<<USR
-Here is the prescription image:
+Extract all medicines and dosages from this prescription image and return only the JSON array:
 <img src="data:image/png;base64,{$imageData}" />
 USR;
 
         $headers = [
             "Authorization" => "Bearer {$this->apiKey}",
-            "Accept" => $stream ? "text/event-stream" : "application/json",
+            "Accept" => "application/json",
         ];
 
         $payload = [
-            "model" => "meta/llama-3.2-11b-vision-instruct",
+            "model" => "mistralai/mistral-medium-3-instruct",
             "messages" => [
                 [
                     "role" => "system",
@@ -57,7 +63,7 @@ USR;
             "top_p" => 1.0,
             "frequency_penalty" => 0.0,
             "presence_penalty" => 0.0,
-            "stream" => $stream,
+            "stream" => false,
         ];
 
         $response = Http::withHeaders($headers)->post($this->apiUrl, $payload);
@@ -65,11 +71,8 @@ USR;
         if ($response->failed()) {
             throw new \Exception("NVIDIA API call failed: " . $response->body());
         }
-
-        if ($stream) {
-            return $response->body();
-        } else {
-            return $response->json();
-        }
+        $responseData = $response->json();
+        $content = $responseData['choices'][0]['message']['content'] ?? '[]';
+        return json_decode($content, true);
     }
 }
