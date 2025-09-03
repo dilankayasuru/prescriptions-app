@@ -154,7 +154,7 @@
                                 <td colspan="6" class="px-6 py-12">
                                     <x-empty-state title="{{ __('No quotations yet') }}"
                                         description="{{ __('No quotations have been created yet. Quotations will appear here once prescriptions are processed.') }}"
-                                        icon="calculator" :button-label="__('Go to Prescriptions')" :button-route="route('prescriptions.index')"
+                                        icon="calculator" :button-label="__('Go to Prescriptions')" :button-route="route('prescriptions')"
                                         button-icon="document-text" />
                                 </td>
                             </tr>

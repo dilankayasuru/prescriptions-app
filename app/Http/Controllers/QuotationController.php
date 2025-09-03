@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\QuotationReady;
 use App\Models\Quotation;
 use App\Models\Prescription;
 use App\Models\MedicineQuotation;
@@ -9,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class QuotationController extends Controller
 {
@@ -68,7 +70,7 @@ class QuotationController extends Controller
 
         // Check if prescription exists and user has permission
         $prescription = Prescription::findOrFail($request->prescription_id);
-        
+
         // Check authorization - only admin can create quotations
         if (Auth::user()->userRole !== 'admin') {
             abort(403, 'Unauthorized action.');
@@ -102,10 +104,22 @@ class QuotationController extends Controller
 
             DB::commit();
 
+            $quotation->load(['prescription.user', 'medicineQuotations']);
+
+            try {
+                Mail::to($quotation->prescription->user->email)->send(new QuotationReady($quotation));
+                Log::info('Quotation email sent successfully to: ' . $quotation->prescription->user->email . ' for quotation ID: ' . $quotation->id);
+            } catch (\Exception $emailException) {
+                Log::error('Failed to send quotation email: ' . $emailException->getMessage(), [
+                    'quotation_id' => $quotation->id,
+                    'user_email' => $quotation->prescription->user->email,
+                    'error' => $emailException->getMessage()
+                ]);
+            }
+
             Log::info('Quotation created successfully for prescription ID: ' . $request->prescription_id . ' by user ID: ' . Auth::id());
 
             return redirect()->route('quotations')->with('success', 'Quotation created and sent to patient successfully!');
-
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Failed to create quotation: ' . $e->getMessage(), [
@@ -202,7 +216,6 @@ class QuotationController extends Controller
             Log::info('Quotation updated successfully for quotation ID: ' . $quotation->id . ' by user ID: ' . Auth::id());
 
             return redirect()->route('quotations.show', $quotation)->with('success', 'Quotation updated successfully!');
-
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Failed to update quotation: ' . $e->getMessage(), [
@@ -230,28 +243,5 @@ class QuotationController extends Controller
         } catch (\Exception $e) {
             return back()->withErrors(['error' => 'Failed to delete quotation. Please try again.']);
         }
-    }
-
-    /**
-     * Get prescription images via AJAX
-     */
-    public function getPrescriptionImages(Request $request, $prescriptionId)
-    {
-        $prescription = Prescription::with('images')->findOrFail($prescriptionId);
-
-        // Check authorization
-        if (Auth::user()->userRole !== 'admin' && $prescription->user_id !== Auth::id()) {
-            abort(403, 'Unauthorized action.');
-        }
-
-        return response()->json([
-            'images' => $prescription->images->map(function ($image) {
-                return [
-                    'id' => $image->id,
-                    'file_name' => $image->file_name,
-                    'file_path' => asset('storage/' . $image->file_path),
-                ];
-            })
-        ]);
     }
 }
