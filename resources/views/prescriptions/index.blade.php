@@ -63,20 +63,6 @@
                     </thead>
 
                     <tbody class="bg-white dark:bg-neutral-800 divide-y divide-gray-100 dark:divide-gray-800">
-                        @php
-                            $statusClass = function ($status) {
-                                $s = strtolower($status ?? '');
-                                return match ($s) {
-                                    'quotation sent' => 'bg-green-100 text-green-800',
-                                    'pending' => 'bg-yellow-100 text-yellow-800',
-                                    'processing' => 'bg-blue-100 text-blue-800',
-                                    'cancelled' => 'bg-red-100 text-red-800',
-                                    'completed' => 'bg-gray-100 text-gray-800',
-                                    default => 'bg-gray-100 text-gray-800',
-                                };
-                            };
-                        @endphp
-
                         @forelse ($prescriptions ?? collect([]) as $prescription)
                             <tr class="hover:bg-gray-50 dark:hover:bg-neutral-900">
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
@@ -109,11 +95,17 @@
                                 </td>
 
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    @php $cls = $statusClass($prescription->status ?? 'Pending'); @endphp
-                                    <span
-                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $cls }}">
-                                        {{ $prescription->status ?? 'Pending' }}
-                                    </span>
+                                    @if ($prescription->quotation)
+                                        <span
+                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                            Quotation Sent
+                                        </span>
+                                    @else
+                                        <span
+                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                                            Pending Review
+                                        </span>
+                                    @endif
                                 </td>
 
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">

@@ -134,7 +134,7 @@
                                             class="text-blue-600 hover:text-blue-800 dark:hover:text-neutral-200 dark:text-white">
                                             View Details
                                         </a>
-                                        @if (Auth::user()->userRole === 'admin')
+                                        @if (Auth::user()->userRole === 'admin' && $quotation->status === 'pending')
                                             <form action="{{ route('quotations.destroy', $quotation) }}" method="POST"
                                                 class="inline">
                                                 @csrf

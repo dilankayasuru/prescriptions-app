@@ -12,8 +12,7 @@
                 <x-primary-button :label="__('Send Quotation')" icon="paper-airplane"
                     route="{{ route('quotations.create', ['prescription_id' => $prescription->id]) }}" />
             @elseif ($prescription->quotation)
-                <x-primary-button :label="__('View Quotation')"
-                    route="{{ route('quotations', ['quotation_id' => $prescription->quotation->id]) }}" />
+                <x-primary-button :label="__('View Quotation')" route="{{ route('quotations.show', $prescription->quotation) }}" />
             @endif
         </div>
 
@@ -35,10 +34,17 @@
                                 <flux:icon name="check-circle" class="w-5 h-5 mr-2" />
                                 <span class="text-sm font-medium">Status</span>
                             </div>
-                            <span
-                                class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                                Pending Review
-                            </span>
+                            @if ($prescription->quotation)
+                                <span
+                                    class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                    Quotation Sent
+                                </span>
+                            @else
+                                <span
+                                    class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                                    Pending Review
+                                </span>
+                            @endif
                         </div>
 
                         <div>
@@ -149,7 +155,7 @@
             @endif
 
             <!-- Action Buttons -->
-            @if (Auth::user()->userRole === 'user')
+            @if (Auth::user()->userRole === 'user' && !$prescription->quotation)
                 <div
                     class="flex flex-col justify-end sm:flex-row gap-4 pt-6 border-t border-gray-200 dark:border-gray-700">
                     <x-primary-button :label="__('Edit Prescription')" variant="outlined" icon="pencil-square"

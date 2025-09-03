@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Mail\QuotationReady;
+use App\Mail\QuotationStatusChanged;
 use App\Models\Quotation;
 use App\Models\Prescription;
 use App\Models\MedicineQuotation;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -224,6 +226,64 @@ class QuotationController extends Controller
                 'error' => $e->getMessage()
             ]);
             return back()->withErrors(['error' => 'Failed to update quotation. Please try again.'])->withInput();
+        }
+    }
+
+    /**
+     * Update the status of the quotation.
+     */
+    public function updateStatus(Request $request, Quotation $quotation)
+    {
+        // Check authorization - only the owner of the prescription can update status
+        if ($quotation->prescription->user_id !== Auth::id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        // Validate the request
+        $request->validate([
+            'status' => 'required|in:approved,rejected',
+        ]);
+
+        // Only allow updating if current status is pending
+        if ($quotation->status !== 'pending') {
+            return back()->withErrors(['error' => 'Quotation status can only be changed from pending status.']);
+        }
+
+        try {
+            $quotation->update([
+                'status' => $request->status,
+            ]);
+
+            // Load relationships for email
+            $quotation->load(['prescription.user', 'medicineQuotations']);
+
+            // Send email notification to admin users
+            try {
+                $adminUsers = User::where('userRole', 'admin')->get();
+                foreach ($adminUsers as $admin) {
+                    Mail::to($admin->email)->send(new QuotationStatusChanged($quotation));
+                }
+                Log::info('Status change notification emails sent to admin users for quotation ID: ' . $quotation->id);
+            } catch (\Exception $emailException) {
+                Log::error('Failed to send status change notification emails: ' . $emailException->getMessage(), [
+                    'quotation_id' => $quotation->id,
+                    'new_status' => $request->status,
+                    'error' => $emailException->getMessage()
+                ]);
+            }
+
+            Log::info('Quotation status updated to ' . $request->status . ' for quotation ID: ' . $quotation->id . ' by user ID: ' . Auth::id());
+
+            $statusMessage = $request->status === 'approved' ? 'approved' : 'rejected';
+            return redirect()->route('quotations.show', $quotation)->with('success', "Quotation {$statusMessage} successfully!");
+        } catch (\Exception $e) {
+            Log::error('Failed to update quotation status: ' . $e->getMessage(), [
+                'quotation_id' => $quotation->id,
+                'user_id' => Auth::id(),
+                'status' => $request->status,
+                'error' => $e->getMessage()
+            ]);
+            return back()->withErrors(['error' => 'Failed to update quotation status. Please try again.']);
         }
     }
 

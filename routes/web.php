@@ -35,6 +35,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('quotations/{quotation}', [QuotationController::class, 'show'])->name('quotations.show');
     Route::get('quotations/{quotation}/edit', [QuotationController::class, 'edit'])->middleware(RoleMiddleware::class . ':admin')->name('quotations.edit');
     Route::put('quotations/{quotation}', [QuotationController::class, 'update'])->middleware(RoleMiddleware::class . ':admin')->name('quotations.update');
+    Route::patch('quotations/{quotation}/status', [QuotationController::class, 'updateStatus'])->name('quotations.updateStatus');
     Route::delete('quotations/{quotation}', [QuotationController::class, 'destroy'])->name('quotations.destroy');
 
     // Orders routes
